@@ -1,0 +1,87 @@
+# Pipeline Configuration
+# Edit this file to select components; never edit files inside models/
+
+embedder:
+  # Winner from embedder benchmark. Options: osnet_v1, osnet_grid_v1, dinov2_small_FALLBACK
+  name: osnet_v1
+  weights: null   # null = use pretrained ImageNet cache
+  embed_dim: 512
+
+embedder_grid:
+  # Grid-pooled variant for heatmap visualisation
+  name: osnet_grid_v1
+  weights: null
+  embed_dim: 4608
+  enabled: true
+
+# Tier 1: Real-Time Detection Engine (YOLO26)
+# "YOLO26 ensures real-time detection even on low-power devices"
+yolo26:
+  role: "real_time_detection_low_power"
+  default: yolo26x.pt
+  low_power_fallback: yolo26n.pt
+  weights: yolo26x.pt
+  conf: 0.3
+  imgsz: 640
+  candidates:
+    - yolo26x.pt   # Extra Large - highest accuracy
+    - yolo26l.pt   # Large
+    - yolo26m.pt   # Medium
+    - yolo26s.pt   # Small
+    - yolo26n.pt   # Nano - real-time on CPU (25.8 - 39.1 FPS)
+
+# Backward-compatibility alias
+detector:
+  weights: yolo26x.pt
+  default: yolo26x.pt
+  conf: 0.3
+  imgsz: 640
+
+# Tier 2: Occlusion, Lighting & Visual Fingerprint Engine (YOLO27)
+# "YOLO27 handles occlusion, lighting changes, and near-identical vehicles"
+yolo27:
+  role: "occlusion_lighting_and_near_identical_disambiguation"
+  enabled: true
+  features:
+    # 1) Normal Recognition using Visual Fingerprints
+    scratches_and_dents: true
+    colour_lighting_invariant: true   # LAB decoupling
+    dust_patterns: true
+    headlights_and_carrier: true
+    side_mirrors_and_handle_style: true
+    stickers_and_decals: true
+    rider_clothes: true              # for two-wheelers
+    # 2) Disambiguation for Near-Identical Vehicles
+    fastag_grid_placement: true      # 3x3 windshield grid
+    tyre_dynamic_profile: true       # aspect / compression
+    sitting_posture: false           # EXCLUDED (crossed out)
+
+tracker:
+  # Options: bytetrack, botsort, ocsort, deepocsort, fasttrack, tracktrack
+  name: bytetrack
+  config: bytetrack.yaml
+
+matching:
+  w_app: 0.6
+  w_attr: 0.1
+  w_time: 0.3
+  w_fastag: 0.0        # OFF by default until proven helpful
+  threshold: 0.35       # dummy threshold for Hungarian assignment
+  attr_conf_min: 0.7    # min confidence for colour/type to count
+  fastag_conf_min: 0.5  # min confidence for FASTag cue
+
+attribute:
+  enabled: false        # OFF by default (no trained model yet)
+  model: null
+
+fastag:
+  enabled: false        # OFF by default (no trained weights)
+  model: null
+  min_crop_width: 200   # minimum reliable windshield width in pixels
+
+crop_selection:
+  max_crops: 5
+  min_crops: 3
+  min_size: 64          # discard crops under 64x64
+
+device: cuda

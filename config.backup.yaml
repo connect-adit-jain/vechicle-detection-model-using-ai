@@ -1,0 +1,54 @@
+# Pipeline Configuration
+# Edit this file to select components; never edit files inside models/
+
+embedder:
+  # Winner from embedder benchmark. Options: osnet_v1, osnet_grid_v1, dinov2_small_FALLBACK
+  name: osnet_v1
+  weights: null   # null = use pretrained ImageNet cache
+  embed_dim: 512
+
+embedder_grid:
+  # Grid-pooled variant for heatmap visualisation
+  name: osnet_grid_v1
+  weights: null
+  embed_dim: 4608
+  enabled: true
+
+detector:
+  # Options: yolo26s.pt, yolo26n.pt, models/det/best.pt
+  candidates:
+    - yolo26s.pt
+    - yolo26n.pt
+  default: yolo26s.pt
+  conf: 0.3
+  imgsz: 640
+
+tracker:
+  # Options: bytetrack, botsort, ocsort, deepocsort, fasttrack, tracktrack
+  name: bytetrack
+  config: bytetrack.yaml
+
+matching:
+  w_app: 0.6
+  w_attr: 0.1
+  w_time: 0.3
+  w_fastag: 0.0        # OFF by default until proven helpful
+  threshold: 0.35       # dummy threshold for Hungarian assignment
+  attr_conf_min: 0.7    # min confidence for colour/type to count
+  fastag_conf_min: 0.5  # min confidence for FASTag cue
+
+attribute:
+  enabled: false        # OFF by default (no trained model yet)
+  model: null
+
+fastag:
+  enabled: false        # OFF by default (no trained weights)
+  model: null
+  min_crop_width: 200   # minimum reliable windshield width in pixels
+
+crop_selection:
+  max_crops: 5
+  min_crops: 3
+  min_size: 64          # discard crops under 64x64
+
+device: cuda

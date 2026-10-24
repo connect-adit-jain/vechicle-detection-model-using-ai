@@ -1,0 +1,25 @@
+# Environments & Python cache
+venv311/
+env/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+
+# Data & Downloads (Too large for GitHub)
+data/
+models_download/
+*.pt
+*.pth
+*.bin
+*.onnx
+*.engine
+bus.jpg
+
+# Temporary / OS
+.DS_Store
+Thumbs.db
+*.log

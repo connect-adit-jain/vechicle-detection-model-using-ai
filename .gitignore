@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Packaging and virtual environments
+.venv/
+venv/
+env/
+venv311/
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# Model weights (Large binaries - exceeding GitHub limits or downloaded on demand)
+*.pt
+*.pth
+*.onnx
+*.engine
+*.bin
+*.weights
+models_download/
+
+# Datasets and local archives
+data/
+dataset/
+archive/
+
+# Output runs & debug visualizations
+outputs/
+output_*.jpg
+output_*.png
+debug_*.jpg
+debug_*.png
+
+# Operating System & IDE files
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
