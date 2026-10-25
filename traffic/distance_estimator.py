@@ -233,24 +233,27 @@ class VehicleDistanceEstimator:
             # 1. Clean Bounding Box
             cv2.rectangle(annotated, (x1, y1), (x2, y2), zone_color, 2)
 
-            # 2. Minimalist, Ultra-Clean Tag: Number + Vehicle Type only
+            # 2. Legible, Clean Tag: Number + Vehicle Type
             tag_text = f"#{veh_id} {lbl}"
-            tag_scale = max(0.42, min(0.65, max(ih, iw) / 2400.0))
+            tag_scale = max(0.55, min(0.85, max(ih, iw) / 1900.0))
             (tw, th), baseline = cv2.getTextSize(tag_text, cv2.FONT_HERSHEY_SIMPLEX, tag_scale, 2)
 
-            # Compact badge placed cleanly above or inside top edge of box
-            badge_y1 = max(0, y1 - th - 6)
+            # Compact badge placed cleanly with comfortable padding
+            pad_x = 8
+            pad_y = 6
+            badge_y1 = max(0, y1 - th - (pad_y * 2))
             badge_y2 = y1
-            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 8, badge_y2), (18, 22, 26), -1)
-            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 8, badge_y2), zone_color, 1)
+            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + (pad_x * 2), badge_y2), (18, 22, 26), -1)
+            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + (pad_x * 2), badge_y2), zone_color, 2)
             cv2.putText(
                 annotated,
                 tag_text,
-                (x1 + 4, y1 - 4),
+                (x1 + pad_x, y1 - pad_y),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 tag_scale,
                 (255, 255, 255),
-                1,
+                2,
+                cv2.LINE_AA,
             )
 
         # 3. Top-Down Bird's-Eye-View (BEV) Radar Display Overlay
