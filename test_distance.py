@@ -33,6 +33,29 @@ COCO_MAP = {
     7: "Truck"
 }
 
+def compute_iou(box1, box2):
+    x1 = max(box1[0], box2[0])
+    y1 = max(box1[1], box2[1])
+    x2 = min(box1[2], box2[2])
+    y2 = min(box1[3], box2[3])
+    inter = max(0.0, x2 - x1) * max(0.0, y2 - y1)
+    area1 = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    area2 = (box2[2] - box2[0]) * (box2[3] - box2[1])
+    union = area1 + area2 - inter
+    return inter / union if union > 0 else 0.0
+
+def compute_iomin(box1, box2):
+    x1 = max(box1[0], box2[0])
+    y1 = max(box1[1], box2[1])
+    x2 = min(box1[2], box2[2])
+    y2 = min(box1[3], box2[3])
+    if x2 <= x1 or y2 <= y1:
+        return 0.0
+    inter = (x2 - x1) * (y2 - y1)
+    min_area = min((box1[2] - box1[0]) * (box1[3] - box1[1]),
+                   (box2[2] - box2[0]) * (box2[3] - box2[1]))
+    return inter / min_area if min_area > 0 else 0.0
+
 def find_sample_image():
     candidates = ["my_car.jpg", "bus.jpg", "testImage1.webp", "testImage2.webp", "testImage3.jpg"]
     for c in candidates:
@@ -81,31 +104,73 @@ def run_distance_pipeline(
     model = YOLO(weights_path)
     res = model(img, conf=conf_thresh, verbose=False)[0]
 
-    detections = []
+    raw_detections = []
     for b in res.boxes:
         cid = int(b.cls[0])
         if cid in COCO_MAP:
             label = COCO_MAP[cid]
             conf = float(b.conf[0])
             box = [float(c) for c in b.xyxy[0]]
-            detections.append({
+            raw_detections.append({
                 "label": label,
                 "confidence": conf,
                 "box": box
             })
 
-    # Auto-Rickshaw detection using UVH weights if available
+    # Auto-Rickshaw detection using UVH weights with Yellow Taxi / Car guard
     uvh_weights = os.path.join("models_download", "weights", "YOLOv11-S", "UVH-26-MV-YOLOv11-S.pt")
     if os.path.exists(uvh_weights):
         m_uvh = YOLO(uvh_weights)
         res_uvh = m_uvh(img, conf=0.25, verbose=False)[0]
         for b in res_uvh.boxes:
             if int(b.cls[0]) == 6:  # Three-wheeler
-                detections.append({
+                u_box = [float(c) for c in b.xyxy[0]]
+                u_conf = float(b.conf[0])
+                bw = max(1.0, u_box[2] - u_box[0])
+                bh = max(1.0, u_box[3] - u_box[1])
+                aspect = bh / bw
+
+                # YELLOW TAXI GUARD:
+                # 1) If it overlaps with an existing Car detection (IoU > 0.20 or containment > 0.35) -> It is a Taxi (Car)
+                # 2) If it has car-like wide proportions (aspect < 1.05) -> Treat as Car, NOT Auto-Rickshaw
+                overlaps_car = False
+                for cd in raw_detections:
+                    if cd["label"] == "Car" and (compute_iou(u_box, cd["box"]) > 0.20 or compute_iomin(u_box, cd["box"]) > 0.35):
+                        overlaps_car = True
+                        break
+
+                if overlaps_car or aspect < 1.05:
+                    # Treat yellow taxi strictly as Car; do not add duplicate auto-rickshaw
+                    continue
+
+                raw_detections.append({
                     "label": "Auto-Rickshaw",
-                    "confidence": float(b.conf[0]),
-                    "box": [float(c) for c in b.xyxy[0]]
+                    "confidence": u_conf,
+                    "box": u_box
                 })
+
+    # Class-Agnostic Non-Maximum Suppression (Eliminate duplicate/overlapping boxes)
+    raw_detections.sort(key=lambda d: d["confidence"], reverse=True)
+    detections = []
+    for cand in raw_detections:
+        suppress = False
+        for kept in detections:
+            if compute_iou(cand["box"], kept["box"]) > 0.30 or compute_iomin(cand["box"], kept["box"]) > 0.50:
+                # If conflicting between Car and Auto-Rickshaw (e.g., yellow taxi), Car always wins
+                if kept["label"] == "Car" and cand["label"] == "Auto-Rickshaw":
+                    suppress = True
+                    break
+                elif cand["label"] == "Car" and kept["label"] == "Auto-Rickshaw":
+                    kept["label"] = "Car"
+                    kept["confidence"] = max(kept["confidence"], cand["confidence"])
+                    kept["box"] = cand["box"]
+                    suppress = True
+                    break
+                else:
+                    suppress = True
+                    break
+        if not suppress:
+            detections.append(cand)
 
     print(f"[2/4] Detected {len(detections)} candidate vehicles.")
 
