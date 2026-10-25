@@ -24,7 +24,7 @@ import numpy as np
 
 
 class VisualFingerprintEngine:
-    def __init__(self, grid_size=(3, 3), enable_fastag=False):
+    def __init__(self, grid_size=(3, 3), enable_fastag=True):
         self.grid_size = grid_size
         self.enable_fastag = enable_fastag
 

@@ -15,8 +15,8 @@ Multi-camera vehicle re-identification and origin-destination (OD) traffic estim
 | **Tier 2 Engine (YOLO27)** | `visual_fingerprint` | Multi-cue 282-dim vector | `shared/visual_fingerprint.py` | Native |
 | **Tracker** | `bytetrack` | Ultralytics 8.4.14 | Built-in ByteTrack | AGPL-3.0 |
 | **Attribute Model** | Disabled (`OFF`) | N/A | Missing in `models/attr` | N/A |
-| **FASTag Cue** | Disabled (`OFF`) | N/A | Missing in `models/fastag` | N/A |
-| **Matching Engine** | Cosine + Time Gating | Adaptive threshold = 0.60 | `shared/adapters.py` | Project Native |
+| **FASTag Cue** | Active (`3x3 Grid`) | Geometric 3x3 Windshield Cell Mapping | `shared/visual_fingerprint.py` | Native |
+| **Matching Engine** | Cosine + Time Gating + Tag | Adaptive threshold = 0.60 | `shared/adapters.py` | Project Native |
 
 ---
 
@@ -57,5 +57,5 @@ Multi-camera vehicle re-identification and origin-destination (OD) traffic estim
    - A detector or tracker cannot differentiate between identical make/model/color vehicles across cameras without temporal and topological constraints. Cross-camera matches report calibrated confidence scores.
 3. **Dataset Domain Shift**:
    - VeRi-776 consists predominantly of passenger cars in Chinese traffic conditions. Generalization to Indian traffic scenes (auto-rickshaws, customized tempos, high two-wheeler density) is constrained when using plain COCO/VeRi models.
-4. **FASTag Permanently Excluded**:
-   - FASTag sticker detection has been completely dropped from our proposed pipeline due to insufficient and non-representative CCTV surveillance data (existing data consists only of macro close-ups). The pipeline relies purely on visual appearance, structural cues, and spatio-temporal gating without any RFID or tag cues.
+4. **FASTag Windshield Grid Disambiguation**:
+   - FASTag detection is active in the Tier 2 Disambiguation Engine (`YOLO27`). It operates via geometrical 3×3 windshield grid mapping to disambiguate look-alike vehicles (separating identical white/silver cars based on driver sticker placement without reading private barcode/ANPR data).

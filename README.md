@@ -22,7 +22,7 @@ An end-to-end computer vision and traffic analytics system designed for **multi-
   - Built-in commercial taxi guard: Corrects yellow/black city taxis to `Car` to prevent false three-wheeler triggers.
 - **Tier 2 — Disambiguation Engine (YOLO27)**:
   - Generates multi-cue 282-dimensional visual fingerprints to disambiguate look-alike vehicles of identical make, model, and color.
-  - Features: LAB color-invariant decoupling, scratch/dent edge signatures, dust patterns, roof racks/carriers, and wheel profiles. (FASTag permanently excluded).
+  - Features: LAB color-invariant decoupling, scratch/dent edge signatures, dust patterns, roof racks/carriers, and windshield 3×3 FASTag grid placement.
 
 ### 🌐 3. Resilient Multi-Camera Tracking & Cross-Camera Re-ID
 - **OSNet Re-ID Embedder**: 512-dimensional feature representations using omni-scale feature learning (`osnet_x1_0`).
@@ -81,6 +81,7 @@ An end-to-end computer vision and traffic analytics system designed for **multi-
   1. **LAB Color Invariance**: Decouples lightness ($L^*$) from chrominance ($a^*, b^*$) to compare true paint color independently of sunlight angle and shadows.
   2. **Surface Anomalies**: Laplacian-of-Gaussian filter detecting scratch and dent energy profiles on body panels.
   3. **Structural Attributes**: Detects roof luggage carriers, side-mirror style protrusion, and dynamic tire aspect ratios.
+  4. **FASTag 3×3 Grid Placement**: Detects RFID sticker centroid placement across a 3×3 windshield grid to differentiate look-alike vehicles without reading barcode/private ANPR data.
 
 ---
 
@@ -105,7 +106,7 @@ An end-to-end computer vision and traffic analytics system designed for **multi-
 | **Vehicle Detection (`YOLO26`)** | ✅ **Active** | **Sufficient**: Verified on UVH-26 ($1,505$ Indian CCTV frames) and COCO. |
 | **Vehicle Re-ID (`OSNet x1.0`)** | ✅ **Active** | **Sufficient**: Benchmarked on VeRi-776 ($51,035$ images, $776$ vehicles, $20$ cameras). |
 | **Distance Estimation (3D Geometry)** | ✅ **Active** | **Sufficient**: Uses calibrated camera parameters ($H_{\text{cam}} = 6\text{m}, \theta = 18^\circ$) and vehicle dimension priors. |
-| **FASTag Detection** | ❌ **Excluded** | **Insufficient Data**: `data/fastag` contains only 207 macro images with unrepresentative angles. Permanently excluded. |
+| **FASTag 3×3 Grid Disambiguation** | ✅ **Active** | **Sufficient**: Operational via geometric windshield grid mapping ([`test_fastag.py`](test_fastag.py)) for look-alike separation without ANPR. |
 | **Fine-Grained Vehicle Attributes** | ❌ **Disabled** | **Insufficient Data**: No Indian vehicle make/model dataset available. |
 
 ---
