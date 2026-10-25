@@ -57,5 +57,5 @@ Multi-camera vehicle re-identification and origin-destination (OD) traffic estim
    - A detector or tracker cannot differentiate between identical make/model/color vehicles across cameras without temporal and topological constraints. Cross-camera matches report calibrated confidence scores.
 3. **Dataset Domain Shift**:
    - VeRi-776 consists predominantly of passenger cars in Chinese traffic conditions. Generalization to Indian traffic scenes (auto-rickshaws, customized tempos, high two-wheeler density) is constrained when using plain COCO/VeRi models.
-4. **Attributes and FASTag**:
-   - Attribute classifiers only cover standard car bodies; FASTag placement detection requires high-resolution frontal camera angles.
+4. **FASTag Permanently Excluded**:
+   - FASTag sticker detection has been completely dropped from our proposed pipeline due to insufficient and non-representative CCTV surveillance data (existing data consists only of macro close-ups). The pipeline relies purely on visual appearance, structural cues, and spatio-temporal gating without any RFID or tag cues.

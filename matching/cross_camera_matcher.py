@@ -74,20 +74,6 @@ class CrossCameraMatcher:
         dot = float(np.dot(v1, v2))
         base_sim = (dot + 1.0) / 2.0 # map [-1, 1] to [0, 1]
 
-        # 2. FASTag 3x3 Grid Disambiguation
-        tag1 = fp1.get("fastag_placement", {})
-        tag2 = fp2.get("fastag_placement", {})
-        if tag1.get("detected") and tag2.get("detected"):
-            cell1 = tag1.get("grid_3x3_cell")
-            cell2 = tag2.get("grid_3x3_cell")
-            if cell1 and cell2:
-                if cell1 == cell2:
-                    base_sim += 0.20 # Exact same placement cell
-                else:
-                    base_sim -= 0.35 # Different windshield location (proves DIFFERENT vehicle)
-        elif tag1.get("detected") != tag2.get("detected"):
-            base_sim -= 0.15 # One vehicle has tag, other does not
-
         # 3. Structural styling match (Roof carrier)
         carrier1 = fp1.get("structural_styling", {}).get("roof_carrier", False)
         carrier2 = fp2.get("structural_styling", {}).get("roof_carrier", False)

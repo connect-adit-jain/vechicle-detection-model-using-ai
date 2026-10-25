@@ -52,9 +52,9 @@ yolo27:
     stickers_and_decals: true
     rider_clothes: true              # for two-wheelers
     # 2) Disambiguation for Near-Identical Vehicles
-    fastag_grid_placement: true      # 3x3 windshield grid
     tyre_dynamic_profile: true       # aspect / compression
-    sitting_posture: false           # EXCLUDED (crossed out)
+    fastag_grid_placement: false     # EXCLUDED (FASTag completely omitted)
+    sitting_posture: false           # EXCLUDED
 
 tracker:
   # Options: bytetrack, botsort, ocsort, deepocsort, fasttrack, tracktrack
@@ -62,20 +62,18 @@ tracker:
   config: bytetrack.yaml
 
 matching:
-  w_app: 0.6
-  w_attr: 0.1
-  w_time: 0.3
-  w_fastag: 0.0        # OFF by default until proven helpful
-  threshold: 0.35       # dummy threshold for Hungarian assignment
-  attr_conf_min: 0.7    # min confidence for colour/type to count
-  fastag_conf_min: 0.5  # min confidence for FASTag cue
+  w_app: 0.65          # Visual appearance embedding weight
+  w_attr: 0.0          # Attributes disabled (insufficient data)
+  w_time: 0.35         # Spatio-temporal time gating weight
+  w_fastag: 0.0        # EXCLUDED
+  threshold: 0.35      # Hungarian assignment threshold
 
 attribute:
-  enabled: false        # OFF by default (no trained model yet)
+  enabled: false       # OFF (insufficient fine-grained Indian attribute data)
   model: null
 
 fastag:
-  enabled: false        # OFF by default (no trained weights)
+  enabled: false       # PERMANENTLY EXCLUDED (insufficient CCTV surveillance data)
   model: null
   min_crop_width: 200   # minimum reliable windshield width in pixels
 

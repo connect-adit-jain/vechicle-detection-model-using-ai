@@ -24,8 +24,9 @@ import numpy as np
 
 
 class VisualFingerprintEngine:
-    def __init__(self, grid_size=(3, 3)):
+    def __init__(self, grid_size=(3, 3), enable_fastag=False):
         self.grid_size = grid_size
+        self.enable_fastag = enable_fastag
 
     def extract_lighting_invariant_color(self, crop_bgr):
         """Extract lighting-robust color histogram using LAB color space (L channel decoupled)."""
@@ -236,7 +237,10 @@ class VisualFingerprintEngine:
         """
         color_feat = self.extract_lighting_invariant_color(crop_bgr)
         anomalies = self.extract_surface_anomalies(crop_bgr)
-        fastag = self.detect_fastag_grid_placement(crop_bgr)
+        if self.enable_fastag:
+            fastag = self.detect_fastag_grid_placement(crop_bgr)
+        else:
+            fastag = {"has_tag": False, "grid_cell": None, "conf": 0.0}
         tyre = self.extract_tyre_dynamic_profile(crop_bgr)
         styling = self.extract_structural_styling(crop_bgr)
         rider = self.extract_rider_clothing(crop_bgr, vehicle_class)
