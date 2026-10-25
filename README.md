@@ -31,6 +31,12 @@ An end-to-end computer vision and traffic analytics system designed for **multi-
 - **Night-Mode Compensation**: Automatic CLAHE histogram equalization, gamma correction, and headlight glare suppression.
 - **Unlabeled Camera Domain Adaptation**: Self-supervised clustering (DBSCAN + centroid alignment) for zero-shot deployment of newly introduced camera feeds.
 
+### 📐 4. Monocular 3D Vehicle Distance & Spatial Localization Engine
+- **3D Ground Plane Projection**: Trigonometric ray-casting from calibrated camera mounting parameters ($H_{\text{cam}}$, downward tilt pitch $\theta$, VFOV) to road contact footprints.
+- **Physical Prior Dimension Fusion**: Bayesian dual-constraint fusion integrating real-world dimensions (car, bus, truck, auto-rickshaw, two-wheeler) with ground projection.
+- **Real-Time Spatial Metrics**: Calculates exact **3D Euclidean Distance**, **Longitudinal Distance ($Z$)**, **Lateral Lane Offset ($X$)**, and lane index.
+- **Top-Down Bird's-Eye-View (BEV) Radar**: Real-time HUD overlay rendering a top-down radar map of the road with proximity safety zones (Immediate, Near, Mid, Far).
+
 ---
 
 ## 📁 Repository Structure

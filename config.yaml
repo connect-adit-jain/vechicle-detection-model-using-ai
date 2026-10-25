@@ -85,3 +85,14 @@ crop_selection:
   min_size: 64          # discard crops under 64x64
 
 device: cuda
+
+# 3D Monocular Spatial Distance & Localization Engine
+distance_estimation:
+  enabled: true
+  camera_height_m: 6.0       # Mounting height of CCTV camera pole above roadway (meters)
+  pitch_deg: 18.0            # Downward tilt angle of camera from horizon (degrees)
+  vfov_deg: 42.0             # Vertical Field of View (degrees)
+  hfov_deg: 65.0             # Horizontal Field of View (degrees)
+  lane_width_m: 3.5          # Standard traffic lane width in meters
+  draw_bev_radar: true       # Render top-down Bird's-Eye-View radar overlay
+  radar_size_px: 260         # Resolution of radar HUD mini-map
