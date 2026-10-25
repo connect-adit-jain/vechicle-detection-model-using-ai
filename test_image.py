@@ -5,6 +5,7 @@ import torch
 import cv2
 import numpy as np
 from ultralytics import YOLO
+from traffic.distance_estimator import VehicleDistanceEstimator
 
 COCO_WEIGHTS = "yolo26x.pt"
 UVH_WEIGHTS = os.path.join("models_download", "weights", "YOLOv11-S", "UVH-26-MV-YOLOv11-S.pt")
@@ -239,36 +240,44 @@ def detect_vehicles(image_path=None, conf_thresh=0.20, frame_pct=60.0, imgsz=Non
     final_detections = [d for d in kept_vehicles if d["confidence"] >= conf_thresh]
     final_detections.sort(key=lambda d: d["confidence"], reverse=True)
 
-    # 6. Draw Clean Visualizations
-    annotated = img.copy()
+    # 6. Estimate 3D Distance, Longitudinal Forward Distance, and Lateral Lane Offset
+    estimator = VehicleDistanceEstimator(
+        camera_height_m=6.0,
+        pitch_deg=18.0,
+        vfov_deg=42.0,
+        hfov_deg=65.0,
+    )
+    dist_results = estimator.process_detections(final_detections, (ih, iw))
+    dist_results.sort(key=lambda d: d["distance_m"])
+
     counts = {}
-    for d in final_detections:
+    for d in dist_results:
         counts[d["label"]] = counts.get(d["label"], 0) + 1
 
     print(f"\n--- DETECTION SUMMARY ({frame_pct:.0f}% OF FRAME) ---")
-    print(f"Total Vehicles Detected: {len(final_detections)}")
+    print(f"Total Vehicles Detected: {len(dist_results)}")
     for lbl, count in sorted(counts.items(), key=lambda x: x[1], reverse=True):
         print(f"  • {lbl:<15}: {count} vehicles")
 
-    print("\n--- DETAILED VEHICLE LIST ---")
-    font_scale = max(0.48, max(ih, iw) / 2100)
-    thickness = max(2, int(round(max(ih, iw) / 800)))
+    print("\n" + "=" * 94)
+    print(f"{'ID':<4} {'Class':<14} {'Conf':<7} {'3D Distance':<13} {'Forward (Z)':<13} {'Lane Offset (X)':<16} {'Zone / Risk':<18}")
+    print("=" * 94)
 
-    for i, det in enumerate(final_detections, 1):
-        lbl = det["label"]
-        conf = det["confidence"]
-        box = det["box"]
-        x1, y1, x2, y2 = [int(round(c)) for c in box]
-        color = CLASS_COLORS.get(lbl, (0, 255, 0))
+    for idx, d in enumerate(dist_results, 1):
+        d["vehicle_id"] = idx
+        lbl = d["label"]
+        conf_str = f"{d['confidence']*100:.1f}%"
+        dist_3d = f"{d['distance_m']:.2f} m"
+        fwd_z = f"{d['longitudinal_z_m']:.2f} m"
+        lane_str = f"{d['lateral_x_m']:+.2f} m ({d['lane_label']})"
+        zone_str = f"{d['proximity_zone']} [{d['proximity_risk']}]"
 
-        cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness)
+        print(f"[{idx:>2}] {lbl:<14} {conf_str:<7} {dist_3d:<13} {fwd_z:<13} {lane_str:<16} {zone_str:<18}")
 
-        txt = f"{lbl} {conf*100:.1f}%"
-        (tw, th), _ = cv2.getTextSize(txt, cv2.FONT_HERSHEY_SIMPLEX, font_scale, 2)
-        cv2.rectangle(annotated, (x1, max(0, y1 - th - 6)), (x1 + tw + 6, max(th + 6, y1)), color, -1)
-        cv2.putText(annotated, txt, (x1 + 3, max(th + 2, y1 - 3)), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 0), 2)
+    print("=" * 94)
 
-        print(f"  [{i:>2}] {lbl:<12} {conf*100:>5.1f}% | Coordinates: [{x1}, {y1}, {x2}, {y2}]")
+    # 7. Render Clean Visualizations with BEV Radar
+    annotated = estimator.render_distance_visualization(img, dist_results, draw_radar=True, radar_size=240)
 
     # Save full annotated image
     cv2.imwrite(output_path, annotated)
@@ -282,7 +291,7 @@ def detect_vehicles(image_path=None, conf_thresh=0.20, frame_pct=60.0, imgsz=Non
     print("=" * 75)
     print(f"SUCCESS! Output visualization saved to: {os.path.abspath(output_path)}")
     print("=" * 75)
-    return final_detections
+    return dist_results
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Accurate vehicle detector focusing on active 60% of frame.")
