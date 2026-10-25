@@ -217,7 +217,7 @@ class VehicleDistanceEstimator:
         scale = max(0.48, max(ih, iw) / 2000.0)
         thickness = max(2, int(round(max(ih, iw) / 800.0)))
 
-        for det in detections:
+        for idx, det in enumerate(detections, 1):
             box = det.get("box")
             if not box:
                 continue
@@ -228,6 +228,7 @@ class VehicleDistanceEstimator:
             lane_str = det.get("lane_offset", "0.0m")
             zone_color = det.get("zone_color", (0, 255, 0))
             cx_px, cy_px = det.get("contact_point_px", [(x1 + x2) // 2, y2])
+            veh_id = det.get("vehicle_id", idx)
 
             # 1. Main Bounding Box with Rounded Aesthetic Corner Brackets
             cv2.rectangle(annotated, (x1, y1), (x2, y2), zone_color, thickness)
@@ -251,22 +252,41 @@ class VehicleDistanceEstimator:
             cv2.circle(annotated, (cx_px, cy_px), 5, (0, 255, 255), -1)
             cv2.ellipse(annotated, (cx_px, cy_px), (int(round((x2 - x1) * 0.35)), 6), 0, 0, 360, zone_color, 2)
 
-            # 3. High-Contrast HUD Distance Tag
-            tag_text = f"{lbl} | {dist_m:.1f}m ({lane_str})"
+            # 3. High-Contrast HUD Distance Tag with Number Identification
+            tag_text = f"#{veh_id} {lbl} | {dist_m:.1f}m ({lane_str})"
             (tw, th), baseline = cv2.getTextSize(tag_text, cv2.FONT_HERSHEY_SIMPLEX, scale, 2)
 
             # Header badge above vehicle
-            badge_y1 = max(0, y1 - th - 8)
+            badge_y1 = max(0, y1 - th - 10)
             badge_y2 = y1
-            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 10, badge_y2), (20, 20, 20), -1)
-            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 10, badge_y2), zone_color, 2)
+            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 12, badge_y2), (15, 18, 22), -1)
+            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 12, badge_y2), zone_color, 2)
             cv2.putText(
                 annotated,
                 tag_text,
-                (x1 + 5, y1 - 5),
+                (x1 + 6, y1 - 5),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 scale,
                 (255, 255, 255),
+                2,
+                cv2.LINE_AA,
+            )
+
+            # 4. Prominent Center ID Badge inside vehicle box for immediate recognition
+            id_badge_text = f"#{veh_id}"
+            id_scale = max(0.40, scale * 0.85)
+            (id_w, id_h), _ = cv2.getTextSize(id_badge_text, cv2.FONT_HERSHEY_SIMPLEX, id_scale, 2)
+            id_cx = x1 + 18
+            id_cy = min(y2 - 8, y1 + id_h + 16)
+            cv2.circle(annotated, (id_cx, id_cy - 4), max(11, id_w // 2 + 5), (15, 18, 22), -1)
+            cv2.circle(annotated, (id_cx, id_cy - 4), max(11, id_w // 2 + 5), zone_color, 2)
+            cv2.putText(
+                annotated,
+                id_badge_text,
+                (id_cx - (id_w // 2), id_cy),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                id_scale,
+                (0, 255, 255),
                 2,
                 cv2.LINE_AA,
             )
@@ -347,28 +367,28 @@ class VehicleDistanceEstimator:
             cv2.LINE_AA,
         )
 
-        # Plot vehicle blips
-        for det in detections:
+        # Plot vehicle blips with ID tags
+        for idx, det in enumerate(detections, 1):
             x_m = det.get("lateral_x_m", 0.0)
             z_m = det.get("longitudinal_z_m", 0.0)
             color = det.get("zone_color", (0, 255, 0))
-            lbl = det.get("label", "C")[0]
+            veh_id = det.get("vehicle_id", idx)
 
             px = int(round(cx + (x_m * scale)))
             py = int(round(cy - (z_m * scale)))
 
-            if 8 <= px <= size - 8 and 8 <= py <= size - 8:
+            if 10 <= px <= size - 10 and 10 <= py <= size - 10:
                 # Blip with glow
                 cv2.circle(radar, (px, py), 6, color, -1)
-                cv2.circle(radar, (px, py), 9, color, 1)
-                # Class initial inside blip
+                cv2.circle(radar, (px, py), 8, (255, 255, 255), 1)
+                # Number tag right next to blip
                 cv2.putText(
                     radar,
-                    lbl,
-                    (px - 3, py + 3),
+                    f"#{veh_id}",
+                    (px + 8, py + 3),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.28,
-                    (0, 0, 0),
+                    (255, 255, 255),
                     1,
                     cv2.LINE_AA,
                 )

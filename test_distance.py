@@ -130,6 +130,7 @@ def run_distance_pipeline(
     print("=" * 92)
 
     for idx, d in enumerate(dist_results, 1):
+        d["vehicle_id"] = idx
         lbl = d["label"]
         conf_str = f"{d['confidence']*100:.1f}%"
         dist_3d = f"{d['distance_m']:.2f} m"
