@@ -230,68 +230,30 @@ class VehicleDistanceEstimator:
             cx_px, cy_px = det.get("contact_point_px", [(x1 + x2) // 2, y2])
             veh_id = det.get("vehicle_id", idx)
 
-            # 1. Main Bounding Box with Rounded Aesthetic Corner Brackets
-            cv2.rectangle(annotated, (x1, y1), (x2, y2), zone_color, thickness)
-            corner_len = min(22, max(8, int((x2 - x1) * 0.2)))
-            thick_corner = thickness + 2
+            # 1. Clean Bounding Box
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), zone_color, 2)
 
-            # Top-Left
-            cv2.line(annotated, (x1, y1), (x1 + corner_len, y1), zone_color, thick_corner)
-            cv2.line(annotated, (x1, y1), (x1, y1 + corner_len), zone_color, thick_corner)
-            # Top-Right
-            cv2.line(annotated, (x2, y1), (x2 - corner_len, y1), zone_color, thick_corner)
-            cv2.line(annotated, (x2, y1), (x2, y1 + corner_len), zone_color, thick_corner)
-            # Bottom-Left
-            cv2.line(annotated, (x1, y2), (x1 + corner_len, y2), zone_color, thick_corner)
-            cv2.line(annotated, (x1, y2), (x1, y2 - corner_len), zone_color, thick_corner)
-            # Bottom-Right
-            cv2.line(annotated, (x2, y2), (x2 - corner_len, y2), zone_color, thick_corner)
-            cv2.line(annotated, (x2, y2), (x2, y2 - corner_len), zone_color, thick_corner)
+            # 2. Minimalist, Ultra-Clean Tag: Number + Vehicle Type only
+            tag_text = f"#{veh_id} {lbl}"
+            tag_scale = max(0.42, min(0.65, max(ih, iw) / 2400.0))
+            (tw, th), baseline = cv2.getTextSize(tag_text, cv2.FONT_HERSHEY_SIMPLEX, tag_scale, 2)
 
-            # 2. Road Ground Contact Footprint Marker
-            cv2.circle(annotated, (cx_px, cy_px), 5, (0, 255, 255), -1)
-            cv2.ellipse(annotated, (cx_px, cy_px), (int(round((x2 - x1) * 0.35)), 6), 0, 0, 360, zone_color, 2)
-
-            # 3. High-Contrast HUD Distance Tag with Number Identification
-            tag_text = f"#{veh_id} {lbl} | {dist_m:.1f}m ({lane_str})"
-            (tw, th), baseline = cv2.getTextSize(tag_text, cv2.FONT_HERSHEY_SIMPLEX, scale, 2)
-
-            # Header badge above vehicle
-            badge_y1 = max(0, y1 - th - 10)
+            # Compact badge placed cleanly above or inside top edge of box
+            badge_y1 = max(0, y1 - th - 6)
             badge_y2 = y1
-            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 12, badge_y2), (15, 18, 22), -1)
-            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 12, badge_y2), zone_color, 2)
+            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 8, badge_y2), (18, 22, 26), -1)
+            cv2.rectangle(annotated, (x1, badge_y1), (x1 + tw + 8, badge_y2), zone_color, 1)
             cv2.putText(
                 annotated,
                 tag_text,
-                (x1 + 6, y1 - 5),
+                (x1 + 4, y1 - 4),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                scale,
+                tag_scale,
                 (255, 255, 255),
-                2,
-                cv2.LINE_AA,
+                1,
             )
 
-            # 4. Prominent Center ID Badge inside vehicle box for immediate recognition
-            id_badge_text = f"#{veh_id}"
-            id_scale = max(0.40, scale * 0.85)
-            (id_w, id_h), _ = cv2.getTextSize(id_badge_text, cv2.FONT_HERSHEY_SIMPLEX, id_scale, 2)
-            id_cx = x1 + 18
-            id_cy = min(y2 - 8, y1 + id_h + 16)
-            cv2.circle(annotated, (id_cx, id_cy - 4), max(11, id_w // 2 + 5), (15, 18, 22), -1)
-            cv2.circle(annotated, (id_cx, id_cy - 4), max(11, id_w // 2 + 5), zone_color, 2)
-            cv2.putText(
-                annotated,
-                id_badge_text,
-                (id_cx - (id_w // 2), id_cy),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                id_scale,
-                (0, 255, 255),
-                2,
-                cv2.LINE_AA,
-            )
-
-        # 4. Top-Down Bird's-Eye-View (BEV) Radar Display Overlay
+        # 3. Top-Down Bird's-Eye-View (BEV) Radar Display Overlay
         if draw_radar and len(detections) > 0:
             radar_img = self._generate_bev_radar(detections, radar_size)
             # Place in top-right corner with 15px margin
