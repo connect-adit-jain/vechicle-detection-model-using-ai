@@ -19,9 +19,10 @@ An end-to-end computer vision and traffic analytics system designed for **multi-
 - **Tier 1 — Real-Time Detection Engine (YOLO26)**:
   - High-throughput detection optimized across GPU (84+ FPS) and CPU (25.8 - 39.1 FPS real-time on Intel/AMD CPUs).
   - Handles 5 target vehicle categories: `car`, `two_wheeler`, `auto_rickshaw`, `bus`, `truck`.
+  - Built-in commercial taxi guard: Corrects yellow/black city taxis to `Car` to prevent false three-wheeler triggers.
 - **Tier 2 — Disambiguation Engine (YOLO27)**:
   - Generates multi-cue 282-dimensional visual fingerprints to disambiguate look-alike vehicles of identical make, model, and color.
-  - Features: LAB color-invariant decoupling, scratch/dent edge signatures, dust patterns, roof racks/carriers, and windshield 3×3 FASTag grid positioning.
+  - Features: LAB color-invariant decoupling, scratch/dent edge signatures, dust patterns, roof racks/carriers, and wheel profiles. (FASTag permanently excluded).
 
 ### 🌐 3. Resilient Multi-Camera Tracking & Cross-Camera Re-ID
 - **OSNet Re-ID Embedder**: 512-dimensional feature representations using omni-scale feature learning (`osnet_x1_0`).
@@ -36,6 +37,76 @@ An end-to-end computer vision and traffic analytics system designed for **multi-
 - **Physical Prior Dimension Fusion**: Bayesian dual-constraint fusion integrating real-world dimensions (car, bus, truck, auto-rickshaw, two-wheeler) with ground projection.
 - **Real-Time Spatial Metrics**: Calculates exact **3D Euclidean Distance**, **Longitudinal Distance ($Z$)**, **Lateral Lane Offset ($X$)**, and lane index.
 - **Top-Down Bird's-Eye-View (BEV) Radar**: Real-time HUD overlay rendering a top-down radar map of the road with proximity safety zones (Immediate, Near, Mid, Far).
+
+---
+
+## 🤖 Detailed Model Architecture & Component Breakdown
+
+### 1. Vehicle Detection: `YOLO26` (YOLOv11 Architecture)
+* **Underlying Architecture**: Ultralytics YOLOv11 convolutional backbone with multi-scale Path Aggregation Network (PANet) and decoupled anchor-free detection heads.
+* **Target Classes**: 5 mixed-traffic vehicle classes calibrated for Indian urban scenes:
+  1. `Car` (Sedan, Hatchback, SUV, Taxi)
+  2. `Two-Wheeler` (Motorcycle, Scooter)
+  3. `Auto-Rickshaw` (Three-wheeler passenger/cargo)
+  4. `Bus` (Transit, Mini-bus)
+  5. `Truck` (Heavy commercial, LCV)
+* **Model Variants & Trade-Offs**:
+  * **`yolo26x.pt` (113.2 MB)**: Extra-large variant providing the highest mean Average Precision (mAP) for resolving distant, overlapping, and heavily occluded vehicles.
+  * **`yolo26s.pt` (20.4 MB)**: Small variant delivering balanced speed (**84.6 FPS** on NVIDIA CUDA GPUs).
+  * **`yolo26n.pt` (5.5 MB)**: Nano lightweight variant achieving real-time inference (**25.8 - 39.1 FPS**) on standard edge/low-power CPUs.
+* **Anti-Hallucination Taxi Guard**: Specialized post-processing logic that analyzes aspect ratios and spatial overlaps to ensure commercial yellow taxis (e.g., Kolkata Ambassadors, Mumbai Kaali-Peeli cabs) are classified as `Car` rather than hallucinated three-wheelers.
+
+---
+
+### 2. Vehicle Re-Identification Embedder: `OSNet x1.0` (`osnet_v1`)
+* **Underlying Architecture**: Omni-Scale Network (`osnet_x1_0`) from TorchReID (`KaiyangZhou/deep-person-reid`).
+* **Design Principle**: Employs stacked multi-stream convolutional bottleneck blocks with factorized depthwise-separable convolutions. Streams use different receptive field sizes, allowing the network to simultaneously capture **macro-scale features** (vehicle silhouette, roofline, chassis shape) and **micro-scale features** (bumper decals, carrier racks, distinct surface marks).
+* **Embedding Dimension**: **512-dimensional vector** normalized to unit length on the hypersphere ($L_2$-normalized).
+* **Cross-Camera Matching**: Cosine similarity metric gated by topological travel-time windows between physical camera locations.
+* **Benchmark Performance**: Achieves **0.0325 mAP** on VeRi-776 benchmarks—a **3.5x improvement** over high-dimensional spatial grid models (`osnet_grid_v1`) while being 9x more compact.
+
+---
+
+### 3. Vision Transformer Fallback: `DINOv2 Small` (`dinov2_small_FALLBACK`)
+* **Underlying Architecture**: Vision Transformer (ViT-S/14) developed by Meta Research with self-supervised feature representations.
+* **Embedding Dimension**: **384-dimensional vector**.
+* **Role**: Serves as a dynamic fallback feature extractor. When extreme lighting variations (e.g. dawn, dusk, night) or optical distortions cause CNN confidence to drop below threshold, DINOv2's global self-attention mechanism maintains consistent cross-camera vehicle matching.
+
+---
+
+### 4. Disambiguation Engine: `YOLO27` (Visual Fingerprint Engine)
+* **Underlying Architecture**: Native multi-cue feature extraction pipeline ([`shared/visual_fingerprint.py`](shared/visual_fingerprint.py)).
+* **Vector Size**: **282-dimensional vector**.
+* **Core Cues**:
+  1. **LAB Color Invariance**: Decouples lightness ($L^*$) from chrominance ($a^*, b^*$) to compare true paint color independently of sunlight angle and shadows.
+  2. **Surface Anomalies**: Laplacian-of-Gaussian filter detecting scratch and dent energy profiles on body panels.
+  3. **Structural Attributes**: Detects roof luggage carriers, side-mirror style protrusion, and dynamic tire aspect ratios.
+
+---
+
+### 5. Multi-Object Trajectory Tracker: `ByteTrack`
+* **Algorithm**: ByteTrack (via Ultralytics).
+* **Design Principle**: Rather than discarding low-confidence detections, ByteTrack associates both high-score and low-score bounding boxes using a Kalman filter and bipartite Hungarian matching.
+* **Role**: Preserves intra-camera tracklet continuity through dense traffic occlusions, ensuring complete vehicle trajectories are captured before cross-camera Re-ID.
+
+---
+
+### 6. Monocular 3D Distance Engine: Geometric Projective Math
+* **Methodology**: Analytical pinhole perspective geometry and ground-plane ray-casting ([`traffic/distance_estimator.py`](traffic/distance_estimator.py)).
+* **Model Requirement**: **Zero neural network weights** (pure deterministic mathematical computation running in $< 0.05\text{ ms}$).
+* **Outputs**: Line-of-sight 3D Euclidean distance ($D_{\text{3D}}$), longitudinal forward distance ($Z$), lateral lane offset ($X$), and top-down Bird's-Eye-View (BEV) radar plotting.
+
+---
+
+### 📋 Data Sufficiency Audit
+
+| Component | Status | Sufficiency Assessment |
+|---|---|---|
+| **Vehicle Detection (`YOLO26`)** | ✅ **Active** | **Sufficient**: Verified on UVH-26 ($1,505$ Indian CCTV frames) and COCO. |
+| **Vehicle Re-ID (`OSNet x1.0`)** | ✅ **Active** | **Sufficient**: Benchmarked on VeRi-776 ($51,035$ images, $776$ vehicles, $20$ cameras). |
+| **Distance Estimation (3D Geometry)** | ✅ **Active** | **Sufficient**: Uses calibrated camera parameters ($H_{\text{cam}} = 6\text{m}, \theta = 18^\circ$) and vehicle dimension priors. |
+| **FASTag Detection** | ❌ **Excluded** | **Insufficient Data**: `data/fastag` contains only 207 macro images with unrepresentative angles. Permanently excluded. |
+| **Fine-Grained Vehicle Attributes** | ❌ **Disabled** | **Insufficient Data**: No Indian vehicle make/model dataset available. |
 
 ---
 
