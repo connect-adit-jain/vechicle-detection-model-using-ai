@@ -152,3 +152,4 @@ def visualize_ranked_results(
             print('- done {}/{}'.format(q_idx + 1, num_q))
 
     print('Done. Images have been saved to "{}" ...'.format(save_dir))
+

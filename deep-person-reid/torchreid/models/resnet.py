@@ -528,3 +528,4 @@ def resnet50_fc512(num_classes, loss='softmax', pretrained=True, **kwargs):
     if pretrained:
         init_pretrained_weights(model, model_urls['resnet50'])
     return model
+

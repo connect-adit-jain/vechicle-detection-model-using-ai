@@ -100,3 +100,4 @@ def check_labels(data_dir="data/veri"):
 
 if __name__ == "__main__":
     check_labels()
+

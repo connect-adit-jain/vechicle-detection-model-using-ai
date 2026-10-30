@@ -361,3 +361,4 @@ def compute_model_complexity(
         print('  {}'.format('-' * num_udscore))
 
     return total_params, total_flops
+

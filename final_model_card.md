@@ -59,3 +59,4 @@ Multi-camera vehicle re-identification and origin-destination (OD) traffic estim
    - VeRi-776 consists predominantly of passenger cars in Chinese traffic conditions. Generalization to Indian traffic scenes (auto-rickshaws, customized tempos, high two-wheeler density) is constrained when using plain COCO/VeRi models.
 4. **FASTag Windshield Grid Disambiguation**:
    - FASTag detection is active in the Tier 2 Disambiguation Engine (`YOLO27`). It operates via geometrical 3×3 windshield grid mapping to disambiguate look-alike vehicles (separating identical white/silver cars based on driver sticker placement without reading private barcode/ANPR data).
+

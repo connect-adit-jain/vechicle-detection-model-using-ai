@@ -48,3 +48,4 @@ def embed(model_dict, crops_bgr):
     norms = np.clip(norms, 1e-8, None)
     features = features / norms
     return features
+

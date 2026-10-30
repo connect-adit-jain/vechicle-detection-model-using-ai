@@ -101,3 +101,4 @@ if __name__ == '__main__':
     parser.add_argument('directory', type=str, help='Path to directory')
     args = parser.parse_args()
     main(args)
+

@@ -476,3 +476,4 @@ class Engine(object):
             open_specified_layers(model, open_layers)
         else:
             open_all_layers(model)
+

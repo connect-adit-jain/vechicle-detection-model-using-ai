@@ -310,3 +310,4 @@ def load_pretrained_weights(model, weight_path):
                 'due to unmatched keys or layer size: {}'.
                 format(discarded_layers)
             )
+

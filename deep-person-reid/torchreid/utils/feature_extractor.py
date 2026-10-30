@@ -150,3 +150,4 @@ class FeatureExtractor(object):
             features = self.model(images)
 
         return features
+

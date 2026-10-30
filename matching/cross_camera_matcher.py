@@ -214,3 +214,4 @@ class CrossCameraMatcher:
                 self.global_id_counter += 1
 
         return matches
+

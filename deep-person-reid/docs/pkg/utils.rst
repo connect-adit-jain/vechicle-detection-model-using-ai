@@ -39,3 +39,4 @@ Torch Tools
 
 .. automodule:: torchreid.utils.model_complexity
     :members:
+

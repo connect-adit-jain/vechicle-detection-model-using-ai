@@ -147,3 +147,4 @@ class ImageDMLEngine(Engine):
             features.append(self.model1(input))
             features.append(self.model2(input))
             return torch.cat(features, 1)
+

@@ -35,3 +35,4 @@ UVH26_CLASS_MAP = {
 
 # === Our 5 target classes ===
 TARGET_CLASSES = ["car", "two_wheeler", "auto_rickshaw", "bus", "truck"]
+

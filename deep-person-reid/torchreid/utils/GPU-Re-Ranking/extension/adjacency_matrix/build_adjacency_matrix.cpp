@@ -17,3 +17,4 @@ at::Tensor build_adjacency_matrix(at::Tensor initial_rank) {
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("forward", &build_adjacency_matrix, "build_adjacency_matrix (CUDA)");
 }
+

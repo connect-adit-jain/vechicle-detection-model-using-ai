@@ -78,3 +78,4 @@ cd ..
 - **Model:** UVH-26 (`iisc-aim/UVH-26`) — Apache-2.0
 - **TorchReID:** `deep-person-reid` — MIT License
 - **Technical Report:** *The Urban Vision Hackathon Dataset and Models: Towards Image Annotations and Accurate Vision Models for Indian Traffic* (arXiv:2511.02563)
+

@@ -117,3 +117,4 @@ class CameraTracker:
                                 break
 
         return tracked_objects
+

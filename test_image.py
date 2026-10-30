@@ -303,3 +303,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     detect_vehicles(args.image, conf_thresh=args.conf, frame_pct=args.pct, imgsz=args.imgsz, output_path=args.out)
+

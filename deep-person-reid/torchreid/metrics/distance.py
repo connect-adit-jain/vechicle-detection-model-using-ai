@@ -78,3 +78,4 @@ def cosine_distance(input1, input2):
     input2_normed = F.normalize(input2, p=2, dim=1)
     distmat = 1 - torch.mm(input1_normed, input2_normed.t())
     return distmat
+

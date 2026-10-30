@@ -63,3 +63,4 @@ if __name__ == "__main__":
         print("Usage: .venv\\Scripts\\python test_reid_compare.py <image1.jpg> <image2.jpg>\n")
         print("Running demo comparing two images of the same vehicle:")
         compare_images(sample1, sample2)
+

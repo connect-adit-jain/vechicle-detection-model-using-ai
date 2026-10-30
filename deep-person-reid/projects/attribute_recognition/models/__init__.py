@@ -15,3 +15,4 @@ def build_model(name, num_classes, pretrained=True, use_gpu=True):
     return __model_factory[name](
         num_classes=num_classes, pretrained=pretrained, use_gpu=use_gpu
     )
+

@@ -19,3 +19,4 @@ def DeepSupervision(criterion, xs, y):
         loss += criterion(x, y)
     loss /= len(xs)
     return loss
+

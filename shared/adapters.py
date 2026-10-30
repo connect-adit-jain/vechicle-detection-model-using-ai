@@ -73,3 +73,4 @@ def confidence_weighted_vote(predictions, key, conf_key):
     winner = max(votes, key=votes.get)
     total_conf = sum(votes.values())
     return winner, votes[winner] / total_conf if total_conf > 0 else 0.0
+

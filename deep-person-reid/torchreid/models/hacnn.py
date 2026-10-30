@@ -412,3 +412,4 @@ class HACNN(nn.Module):
 
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))
+

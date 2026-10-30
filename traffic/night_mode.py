@@ -113,3 +113,4 @@ def compute_idf1_and_flow_error(ground_truth_tracks, predicted_tracks, camera_pa
         "Flow_Error": round(flow_err, 4),
         "Flow_Accuracy": round(1.0 - min(flow_err, 1.0), 4)
     }
+

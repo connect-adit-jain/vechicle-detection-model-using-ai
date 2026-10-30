@@ -272,3 +272,4 @@ def mobilenetv2_x1_4(num_classes, loss, pretrained=True, **kwargs):
             .format(model_urls['mobilenetv2_x1_4'])
         )
     return model
+

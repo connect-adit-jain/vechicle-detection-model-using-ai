@@ -71,3 +71,4 @@ class ImageSoftmaxNASEngine(Engine):
         }
 
         return loss_dict
+

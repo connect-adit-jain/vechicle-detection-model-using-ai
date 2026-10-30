@@ -234,3 +234,4 @@ def squeezenet1_1(num_classes, loss='softmax', pretrained=True, **kwargs):
     if pretrained:
         init_pretrained_weights(model, model_urls['squeezenet1_1'])
     return model
+

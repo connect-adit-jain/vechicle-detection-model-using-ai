@@ -93,3 +93,4 @@ def cell_importance(model_dict, crop_bgr):
     importance = torch.norm(grid_features[0], dim=0)  # (3, 3)
     importance = importance / importance.sum()
     return importance.cpu().numpy().astype(np.float32)
+

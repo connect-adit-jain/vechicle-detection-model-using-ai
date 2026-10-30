@@ -48,3 +48,4 @@ class CrossEntropyLoss(nn.Module):
             targets = targets.cuda()
         targets = (1 - self.eps) * targets + self.eps / self.num_classes
         return (-targets * log_probs).mean(0).sum()
+

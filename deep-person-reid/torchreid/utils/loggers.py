@@ -144,3 +144,4 @@ class RankLogger(object):
                 self.logger[name]['epoch'], self.logger[name]['rank1']
             ):
                 print('- epoch {}\t rank1 {:.1%}'.format(epoch, rank1))
+

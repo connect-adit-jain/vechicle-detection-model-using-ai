@@ -342,3 +342,4 @@ def xception(num_classes, loss='softmax', pretrained=True, **kwargs):
         model_url = pretrained_settings['xception']['imagenet']['url']
         init_pretrained_weights(model, model_url)
     return model
+

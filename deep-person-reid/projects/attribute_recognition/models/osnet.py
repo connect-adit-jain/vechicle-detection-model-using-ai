@@ -412,3 +412,4 @@ def osnet_maxpool(num_classes=1000, loss='softmax', **kwargs):
         pool='max',
         **kwargs
     )
+

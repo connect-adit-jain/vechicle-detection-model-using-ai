@@ -20,3 +20,4 @@ RUN pip install -r requirements.txt
 RUN pip install torch==1.10 torchvision==0.11.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
 RUN pip install setuptools==59.5.0
 RUN python setup.py develop
+

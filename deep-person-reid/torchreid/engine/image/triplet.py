@@ -120,3 +120,4 @@ class ImageTripletEngine(Engine):
         self.optimizer.step()
 
         return loss_summary
+

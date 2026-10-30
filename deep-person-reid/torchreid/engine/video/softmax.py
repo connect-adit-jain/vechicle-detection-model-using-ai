@@ -107,3 +107,4 @@ class VideoSoftmaxEngine(ImageSoftmaxEngine):
         else:
             features = torch.max(features, 1)[0]
         return features
+

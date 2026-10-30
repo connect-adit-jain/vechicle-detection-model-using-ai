@@ -100,3 +100,4 @@ def detect(model_dict, frame_bgr, conf=0.3):
                 "class": target_class,
             })
     return detections
+

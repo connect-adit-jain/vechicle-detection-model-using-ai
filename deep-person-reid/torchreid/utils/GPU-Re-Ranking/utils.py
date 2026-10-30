@@ -135,3 +135,4 @@ def compute_mAP(index, good_index, junk_index):
         ap = ap + d_recall * (old_precision+precision) / 2
 
     return ap, cmc
+

@@ -6,3 +6,4 @@ build-image:
 
 run:
 	nvidia-docker run -v ${PWD}:/home/appuser --name=deeppreid --net=host --ipc=host -it deeppreid:v0
+

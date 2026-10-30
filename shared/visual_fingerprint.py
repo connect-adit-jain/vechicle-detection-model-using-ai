@@ -291,3 +291,4 @@ class VisualFingerprintEngine:
             },
             "rider_clothing": rider,
         }
+

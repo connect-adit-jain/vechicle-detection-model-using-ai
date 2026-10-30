@@ -1129,3 +1129,4 @@ def nasnetamobile(num_classes, loss='softmax', pretrained=True, **kwargs):
         model_url = pretrained_settings['nasnetamobile']['imagenet']['url']
         init_pretrained_weights(model, model_url)
     return model
+

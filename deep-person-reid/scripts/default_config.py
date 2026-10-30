@@ -210,3 +210,4 @@ def engine_run_kwargs(cfg):
         'ranks': cfg.test.ranks,
         'rerank': cfg.test.rerank
     }
+

@@ -29,3 +29,4 @@ at::Tensor build_adjacency_matrix_forward(at::Tensor initial_rank) {
     return A;
 
 }
+

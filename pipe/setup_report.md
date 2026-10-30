@@ -122,3 +122,4 @@ A standalone process (`offline_check.py`) with all outbound network sockets bloc
 1. `yolo11s.pt` loaded from local disk and performed inference offline.
 2. `UVH-26-MV-YOLOv11-S.pt` loaded from local disk and performed inference offline.
 3. Zero network calls occurred. Result: **PASSED**.
+

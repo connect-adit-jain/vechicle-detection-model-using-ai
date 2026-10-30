@@ -262,3 +262,4 @@ DukeMTMC-VideoReID :math:`^\dagger` (``dukemtmcvidreid``)
             train/
             query/
             gallery/
+

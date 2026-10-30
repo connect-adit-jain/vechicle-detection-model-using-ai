@@ -120,3 +120,4 @@ class VideoTripletEngine(ImageTripletEngine):
         else:
             features = torch.max(features, 1)[0]
         return features
+

@@ -111,3 +111,4 @@ def re_ranking(q_g_dist, q_q_dist, g_g_dist, k1=20, k2=6, lambda_value=0.3):
     del jaccard_dist
     final_dist = final_dist[:query_num, query_num:]
     return final_dist
+

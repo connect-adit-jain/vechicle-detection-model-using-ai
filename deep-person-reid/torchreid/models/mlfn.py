@@ -267,3 +267,4 @@ def mlfn(num_classes, loss='softmax', pretrained=True, **kwargs):
             .format(model_urls['imagenet'])
         )
     return model
+

@@ -85,3 +85,4 @@ class UnlabeledCameraIntegrator:
             "estimated_inflow_rate_per_min": round(len(unlabeled_tracks) * 1.5, 1),
             "matches": matches
         }
+

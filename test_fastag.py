@@ -194,3 +194,4 @@ def detect_fastag(image_path="fastag.webp", output_path="output_fastag.jpg"):
 if __name__ == "__main__":
     target = sys.argv[1] if len(sys.argv) > 1 else "fastag.webp"
     detect_fastag(target)
+

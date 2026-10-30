@@ -81,3 +81,4 @@ print("Python:\nmAP = {} \ncmc = {}\n".format(mAP, cmc))
 cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, max_rank, use_cython=True)
 print("Cython:\nmAP = {} \ncmc = {}\n".format(mAP, cmc))
 """
+

@@ -533,3 +533,4 @@ def build_model(name, num_classes=100):
             'Unknown model: {}. Must be one of {}'.format(name, avai_models)
         )
     return __models[name](num_classes=num_classes)
+

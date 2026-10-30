@@ -57,3 +57,4 @@ def gnn_reranking(X_q, X_g, k1, k2):
     L = torch.sort(-cosine_similarity, dim=1)[1]
     L = L.data.cpu().numpy()
     return L
+

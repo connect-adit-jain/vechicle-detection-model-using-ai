@@ -607,3 +607,4 @@ def osnet_ain_x0_25(
     if pretrained:
         init_pretrained_weights(model, key='osnet_ain_x0_25')
     return model
+

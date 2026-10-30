@@ -260,3 +260,4 @@ def shufflenet_v2_x2_0(num_classes, loss='softmax', pretrained=True, **kwargs):
     if pretrained:
         init_pretrained_weights(model, model_urls['shufflenetv2_x2.0'])
     return model
+

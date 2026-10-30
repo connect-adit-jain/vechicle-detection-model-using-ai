@@ -349,3 +349,4 @@ We have provided a simple API for feature extraction, which accepts input of var
 
     features = extractor(image_list)
     print(features.shape) # output (5, 512)
+

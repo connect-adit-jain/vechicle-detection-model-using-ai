@@ -141,3 +141,4 @@ def listdir_nohidden(path, sort=False):
     if sort:
         items.sort()
     return items
+

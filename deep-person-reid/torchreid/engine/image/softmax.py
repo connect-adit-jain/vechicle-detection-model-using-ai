@@ -95,3 +95,4 @@ class ImageSoftmaxEngine(Engine):
         }
 
         return loss_summary
+

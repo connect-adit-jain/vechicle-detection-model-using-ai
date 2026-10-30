@@ -229,3 +229,4 @@ System behavior can be customized via [`config.yaml`](config.yaml):
 - **TorchReID**: Kaiyang Zhou ([MIT License](https://github.com/KaiyangZhou/deep-person-reid))
 - **YOLO Implementations**: Ultralytics ([AGPL-3.0 License](https://github.com/ultralytics/ultralytics))
 - **Dataset Benchmarks**: UVH-26 (Indian Urban Vision Hackathon, IISc AIM, CC-BY-4.0) & VeRi-776.
+

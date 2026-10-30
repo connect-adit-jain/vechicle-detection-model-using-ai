@@ -57,3 +57,4 @@ class PA100K(Dataset):
         attr_dict = {i: str(attr[0][0]) for i, attr in enumerate(attrs)}
 
         return train, val, test, attr_dict
+

@@ -24,3 +24,4 @@ setup(
     name='Cython-based reid evaluation code',
     ext_modules=cythonize(ext_modules)
 )
+

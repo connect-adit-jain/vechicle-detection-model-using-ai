@@ -272,3 +272,4 @@ def resnet50_ibn_b(num_classes, loss='softmax', pretrained=False, **kwargs):
     if pretrained:
         init_pretrained_weights(model, model_urls['resnet50'])
     return model
+

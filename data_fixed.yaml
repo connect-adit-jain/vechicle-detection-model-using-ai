@@ -6,3 +6,4 @@ path: C:\Projects - SR\Project - MUJ\data\fastag
 test: C:\Projects - SR\Project - MUJ\data\fastag\test\images
 train: C:\Projects - SR\Project - MUJ\data\fastag\train\images
 val: C:\Projects - SR\Project - MUJ\data\fastag\valid\images
+

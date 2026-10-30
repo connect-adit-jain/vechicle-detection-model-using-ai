@@ -35,3 +35,4 @@ def accuracy(output, target, topk=(1, )):
         res.append(acc)
 
     return res
+

@@ -67,3 +67,4 @@ Here is a collection of ReID-related research with links to papers and code. You
 - [CVPR18] Exploit the Unknown Gradually: One-Shot Video-Based Person Re-Identification by Stepwise Learning. [[paper](https://yu-wu.net/pdf/CVPR2018_Exploit-Unknown-Gradually.pdf)][[code](https://github.com/Yu-Wu/Exploit-Unknown-Gradually)]
 
 - [ArXiv18] Revisiting Temporal Modeling for Video-based Person ReID. [[paper](https://arxiv.org/abs/1805.02104)][[code](https://github.com/jiyanggao/Video-Person-ReID)]
+

@@ -59,3 +59,4 @@ def test_scratch_detection(image_path="my_car.jpg", output_path="output_scratch.
 if __name__ == "__main__":
     target = sys.argv[1] if len(sys.argv) > 1 else "my_car.jpg"
     test_scratch_detection(target)
+

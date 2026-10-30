@@ -359,3 +359,4 @@ def inceptionresnetv2(num_classes, loss='softmax', pretrained=True, **kwargs):
     if pretrained:
         model.load_imagenet_weights()
     return model
+

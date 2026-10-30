@@ -52,3 +52,4 @@ crop_selection:
   min_size: 64          # discard crops under 64x64
 
 device: cuda
+
