@@ -6,6 +6,8 @@
 
 An end-to-end computer vision and traffic analytics system designed for **multi-camera vehicle detection, visual re-identification, and origin-destination (OD) traffic estimation** across non-overlapping surveillance camera feeds in dense, mixed urban traffic (cars, auto-rickshaws, two-wheelers, buses, and trucks).
 
+The repository includes the detection, tracking, re-identification, distance-estimation, traffic-analysis, and verification components needed to run the complete workflow from one project checkout.
+
 ---
 
 ## 🚀 Key Highlights & Capabilities
